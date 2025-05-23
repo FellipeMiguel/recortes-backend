@@ -12,9 +12,11 @@ app.use(express.json());
 
 app.use("/cuts", cutRoutes);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
-  res.status(500).json({ message: "Internal Server Error" });
+  const status = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
 });
 
 const PORT = process.env.PORT || 3001;
