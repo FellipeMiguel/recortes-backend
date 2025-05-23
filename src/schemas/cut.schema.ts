@@ -1,3 +1,40 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Recorte:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         sku:
+ *           type: string
+ *         modelName:
+ *           type: string
+ *         cutType:
+ *           type: string
+ *         position:
+ *           type: string
+ *         productType:
+ *           type: string
+ *         material:
+ *           type: string
+ *         materialColor:
+ *           type: string
+ *         displayOrder:
+ *           type: integer
+ *         imageUrl:
+ *           type: string
+ *         userId:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ */
+
 import { z } from "zod";
 
 export const createCutSchema = z.object({
