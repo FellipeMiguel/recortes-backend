@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import supabase from "../services/supabase";
 import multer from "multer";
+import { AuthenticatedRequest } from "../middlewares/auth";
 
 const prisma = new PrismaClient();
 
@@ -76,6 +77,8 @@ export const create = async (
       displayOrder,
     } = req.body;
 
+    const { id: userId } = (req as AuthenticatedRequest).user;
+
     if (!req.file) {
       return res.status(400).json({ message: "Image file is required" });
     }
@@ -87,7 +90,7 @@ export const create = async (
       materialColor,
     });
 
-    const cut = await prisma.recorte.create({
+    const recorte = await prisma.recorte.create({
       data: {
         sku,
         modelName,
@@ -98,10 +101,11 @@ export const create = async (
         materialColor,
         displayOrder: Number(displayOrder),
         imageUrl,
+        userId,
       },
     });
 
-    return res.status(201).json(cut);
+    return res.status(201).json(recorte);
   } catch (err) {
     next(err);
   }
@@ -117,8 +121,9 @@ export const list = async (req: Request, res: Response, next: NextFunction) => {
       cutType,
       sortBy = "displayOrder",
     } = req.query as Record<string, string>;
+    const { id: userId } = (req as AuthenticatedRequest).user;
 
-    const where: any = {};
+    const where: any = { userId };
     if (sku) where.sku = sku;
     if (cutType) where.cutType = cutType;
 
@@ -157,14 +162,15 @@ export const getById = async (
 ) => {
   try {
     const { id } = req.params;
-    const cut = await prisma.recorte.findUnique({
-      where: { id: Number(id) },
-    });
+    const { id: userId } = (req as AuthenticatedRequest).user;
 
-    if (!cut) {
-      return res.status(404).json({ message: "Cut not found" });
+    const recorte = await prisma.recorte.findFirst({
+      where: { id: Number(id), userId },
+    });
+    if (!recorte) {
+      return res.status(404).json({ message: "Recorte not found" });
     }
-    res.json(cut);
+    res.json(recorte);
   } catch (err) {
     next(err);
   }
@@ -178,10 +184,14 @@ export const update = async (
 ) => {
   try {
     const { id } = req.params;
-    const existing = await prisma.recorte.findUnique({
-      where: { id: Number(id) },
+    const { id: userId } = (req as AuthenticatedRequest).user;
+
+    const existing = await prisma.recorte.findFirst({
+      where: { id: Number(id), userId },
     });
-    if (!existing) res.status(404).json({ message: "Cut not found" });
+    if (!existing) {
+      return res.status(404).json({ message: "Recorte not found" });
+    }
 
     const {
       sku,
@@ -236,8 +246,10 @@ export const remove = async (
 ) => {
   try {
     const { id } = req.params;
-    const existing = await prisma.recorte.findUnique({
-      where: { id: Number(id) },
+    const { id: userId } = (req as AuthenticatedRequest).user;
+
+    const existing = await prisma.recorte.findFirst({
+      where: { id: Number(id), userId },
     });
     if (!existing) {
       return res.status(404).json({ message: "Recorte not found" });

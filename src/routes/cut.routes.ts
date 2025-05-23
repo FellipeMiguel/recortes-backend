@@ -3,9 +3,12 @@ import multer from "multer";
 import * as CutController from "../controllers/cut.controller";
 import { validate } from "../middlewares/validate";
 import { createCutSchema, updateCutSchema } from "../schemas/cut.schema";
+import { authenticateGoogle } from "../middlewares/auth";
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
+
+router.use(authenticateGoogle);
 
 router.post(
   "/",
