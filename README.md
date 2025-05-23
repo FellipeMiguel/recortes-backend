@@ -32,7 +32,7 @@ API RESTful para gerenciamento de recortes, com autenticação via Google OAuth2
 ## Instalação
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
+git clone https://github.com/FellipeMiguel/recortes-backend.git
 cd recortes-backend
 npm install
 ```
@@ -102,11 +102,11 @@ O campo `image` deve ser enviado como **multipart/form-data** no `POST` e `PUT` 
 
 | Método | Rota          | Descrição             |
 | ------ | ------------- | --------------------- |
-| POST   | /recortes     | Criar um recorte      |
-| GET    | /recortes     | Listar recortes       |
-| GET    | /recortes/:id | Buscar recorte por ID |
-| PUT    | /recortes/:id | Atualizar recorte     |
-| DELETE | /recortes/:id | Remover recorte       |
+| POST   | /cut     | Criar um recorte      |
+| GET    | /cut     | Listar cut       |
+| GET    | /cut/:id | Buscar recorte por ID |
+| PUT    | /cut/:id | Atualizar recorte     |
+| DELETE | /cut/:id | Remover recorte       |
 
 ---
 
