@@ -6,6 +6,35 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  googleId  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recortes Recorte[]
+}
+
+model Recorte {
+  id            Int      @id @default(autoincrement())
+  sku           String   @unique
+  modelName     String   @unique
+  cutType       String
+  position      String
+  productType   String
+  material      String
+  materialColor String
+  displayOrder  Int
+  imageUrl      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        String
+  User          User     @relation(fields: [userId], references: [id])
 }
