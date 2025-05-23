@@ -94,16 +94,16 @@ Authorization: Bearer SEU_ID_TOKEN
 
 ## Upload de imagens
 
-O campo `image` deve ser enviado como **multipart/form-data** no `POST` e `PUT` de `/recortes`.
+O campo `image` deve ser enviado como **multipart/form-data** no `POST` e `PUT` de `/cut`.
 
 ---
 
 ## Endpoints
 
-| Método | Rota          | Descrição             |
-| ------ | ------------- | --------------------- |
+| Método | Rota     | Descrição             |
+| ------ | -------- | --------------------- |
 | POST   | /cut     | Criar um recorte      |
-| GET    | /cut     | Listar cut       |
+| GET    | /cut     | Listar recorte        |
 | GET    | /cut/:id | Buscar recorte por ID |
 | PUT    | /cut/:id | Atualizar recorte     |
 | DELETE | /cut/:id | Remover recorte       |
