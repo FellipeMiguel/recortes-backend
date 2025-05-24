@@ -1,3 +1,5 @@
+// src/routes/cut.routes.ts
+
 import { Router } from "express";
 import multer from "multer";
 import * as CutController from "../controllers/cut.controller";
@@ -13,45 +15,11 @@ const router = Router();
  * tags:
  *   name: Recortes
  *   description: API endpoints para CRUD de recortes
- *
- *:
- *   schemas:
- *     Recorte:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         sku:
- *           type: string
- *         modelName:
- *           type: string
- *         cutType:
- *           type: string
- *         position:
- *           type: string
- *         productType:
- *           type: string
- *         material:
- *           type: string
- *         materialColor:
- *           type: string
- *         displayOrder:
- *           type: integer
- *         imageUrl:
- *           type: string
- *         userId:
- *           type: string
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
  */
 
 /**
  * @swagger
- * /recortes:
+ * /cuts:
  *   post:
  *     summary: Cria um novo recorte
  *     tags: [Recortes]
@@ -80,19 +48,22 @@ const router = Router();
  *                 type: string
  *               displayOrder:
  *                 type: integer
+ *               status:
+ *                 type: string
+ *                 enum: [ATIVO, EXPIRADO, PENDENTE]
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
- *       201:
+ *       '201':
  *         description: Recorte criado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/schemas/Recorte'
- *       400:
+ *               $ref: '#/components/schemas/Recorte'
+ *       '400':
  *         description: Requisição inválida ou validação falhou
- *       401:
+ *       '401':
  *         description: Não autorizado
  */
 router.post(
@@ -105,7 +76,7 @@ router.post(
 
 /**
  * @swagger
- * /recortes:
+ * /cuts:
  *   get:
  *     summary: Lista todos os recortes do usuário autenticado
  *     tags: [Recortes]
@@ -133,12 +104,18 @@ router.post(
  *           type: string
  *         description: Filtrar por tipo de recorte
  *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [ATIVO, EXPIRADO, PENDENTE]
+ *         description: Filtrar por status
+ *       - in: query
  *         name: sortBy
  *         schema:
  *           type: string
  *         description: Campo para ordenação
  *     responses:
- *       200:
+ *       '200':
  *         description: Lista de recortes
  *         content:
  *           application/json:
@@ -148,17 +125,17 @@ router.post(
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/schemas/Recorte'
+ *                     $ref: '#/components/schemas/Recorte'
  *                 meta:
  *                   type: object
- *       401:
+ *       '401':
  *         description: Não autorizado
  */
 router.get("/", authenticateGoogle, CutController.list);
 
 /**
  * @swagger
- * /recortes/{id}:
+ * /cuts/{id}:
  *   get:
  *     summary: Obtém um recorte pelo ID (apenas do usuário autenticado)
  *     tags: [Recortes]
@@ -172,22 +149,22 @@ router.get("/", authenticateGoogle, CutController.list);
  *           type: string
  *         description: ID do recorte
  *     responses:
- *       200:
+ *       '200':
  *         description: Recorte encontrado
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/schemas/Recorte'
- *       401:
+ *               $ref: '#/components/schemas/Recorte'
+ *       '401':
  *         description: Não autorizado
- *       404:
+ *       '404':
  *         description: Recorte não encontrado
  */
 router.get("/:id", authenticateGoogle, CutController.getById);
 
 /**
  * @swagger
- * /recortes/{id}:
+ * /cuts/{id}:
  *   put:
  *     summary: Atualiza um recorte existente
  *     tags: [Recortes]
@@ -223,21 +200,24 @@ router.get("/:id", authenticateGoogle, CutController.getById);
  *                 type: string
  *               displayOrder:
  *                 type: integer
+ *               status:
+ *                 type: string
+ *                 enum: [ATIVO, EXPIRADO, PENDENTE]
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
- *       200:
+ *       '200':
  *         description: Recorte atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/schemas/Recorte'
- *       400:
+ *               $ref: '#/components/schemas/Recorte'
+ *       '400':
  *         description: Validação falhou
- *       401:
+ *       '401':
  *         description: Não autorizado
- *       404:
+ *       '404':
  *         description: Recorte não encontrado
  */
 router.put(
@@ -250,7 +230,7 @@ router.put(
 
 /**
  * @swagger
- * /recortes/{id}:
+ * /cuts/{id}:
  *   delete:
  *     summary: Remove um recorte e sua imagem do bucket
  *     tags: [Recortes]
@@ -264,11 +244,11 @@ router.put(
  *           type: string
  *         description: ID do recorte
  *     responses:
- *       204:
+ *       '204':
  *         description: Recorte removido com sucesso
- *       401:
+ *       '401':
  *         description: Não autorizado
- *       404:
+ *       '404':
  *         description: Recorte não encontrado
  */
 router.delete("/:id", authenticateGoogle, CutController.remove);

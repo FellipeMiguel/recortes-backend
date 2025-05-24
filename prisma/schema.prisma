@@ -11,6 +11,12 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+enum RecortesStatus {
+  ATIVO
+  EXPIRADO
+  PENDENTE
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -23,9 +29,9 @@ model User {
 }
 
 model Recorte {
-  id            Int      @id @default(autoincrement())
-  sku           String   @unique
-  modelName     String   @unique
+  id            Int            @id @default(autoincrement())
+  sku           String         @unique
+  modelName     String         @unique
   cutType       String
   position      String
   productType   String
@@ -33,8 +39,10 @@ model Recorte {
   materialColor String
   displayOrder  Int
   imageUrl      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  userId        String
-  User          User     @relation(fields: [userId], references: [id])
+  status        RecortesStatus @default(ATIVO)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  User      User     @relation(fields: [userId], references: [id])
 }

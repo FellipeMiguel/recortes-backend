@@ -37,6 +37,8 @@
 
 import { z } from "zod";
 
+const statusEnum = z.enum(["ATIVO", "EXPIRADO", "PENDENTE"]);
+
 export const createCutSchema = z.object({
   body: z.object({
     sku: z.string().min(1, "SKU is required"),
@@ -53,6 +55,7 @@ export const createCutSchema = z.object({
         (n) => Number.isInteger(n) && n > 0,
         "Display order must be a positive integer"
       ),
+    status: statusEnum.optional(),
   }),
   file: z
     .any()
@@ -64,7 +67,7 @@ export const createCutSchema = z.object({
 
 export const updateCutSchema = z.object({
   params: z.object({
-    id: z.string().uuid("Invalid recorte ID"),
+    id: z.string(),
   }),
   body: z.object({
     sku: z.string().optional(),
@@ -82,6 +85,7 @@ export const updateCutSchema = z.object({
         (n) => n === undefined || (Number.isInteger(n) && n > 0),
         "Display order must be a positive integer"
       ),
+    status: statusEnum.optional(),
   }),
   file: z
     .any()

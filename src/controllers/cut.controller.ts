@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, RecortesStatus } from "@prisma/client";
 import supabase from "../services/supabase";
 import multer from "multer";
 import { AuthenticatedRequest } from "../middlewares/auth";
@@ -75,6 +75,7 @@ export const create = async (
       material,
       materialColor,
       displayOrder,
+      status,
     } = req.body;
 
     const { id: userId } = (req as AuthenticatedRequest).user;
@@ -102,6 +103,7 @@ export const create = async (
         displayOrder: Number(displayOrder),
         imageUrl,
         userId,
+        status,
       },
     });
 
@@ -119,6 +121,7 @@ export const list = async (req: Request, res: Response, next: NextFunction) => {
       limit = "10",
       sku,
       cutType,
+      status,
       sortBy = "displayOrder",
     } = req.query as Record<string, string>;
     const { id: userId } = (req as AuthenticatedRequest).user;
@@ -126,6 +129,7 @@ export const list = async (req: Request, res: Response, next: NextFunction) => {
     const where: any = { userId };
     if (sku) where.sku = sku;
     if (cutType) where.cutType = cutType;
+    if (status) where.status = status as RecortesStatus;
 
     const pageNum = Number(page);
     const perPage = Number(limit);
@@ -186,8 +190,13 @@ export const update = async (
     const { id } = req.params;
     const { id: userId } = (req as AuthenticatedRequest).user;
 
+    const recorteId = Number(id);
+    if (isNaN(recorteId)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     const existing = await prisma.recorte.findFirst({
-      where: { id: Number(id), userId },
+      where: { id: recorteId, userId },
     });
     if (!existing) {
       return res.status(404).json({ message: "Recorte not found" });
@@ -202,6 +211,7 @@ export const update = async (
       material,
       materialColor,
       displayOrder,
+      status,
     } = req.body;
 
     const data: any = {
@@ -212,8 +222,16 @@ export const update = async (
       productType,
       material,
       materialColor,
+      status,
     };
-
+    if (sku) data.sku = sku;
+    if (modelName) data.modelName = modelName;
+    if (cutType) data.cutType = cutType;
+    if (position) data.position = position;
+    if (productType) data.productType = productType;
+    if (material) data.material = material;
+    if (materialColor) data.materialColor = materialColor;
+    if (status) data.status = status;
     if (displayOrder !== undefined) {
       data.displayOrder = Number(displayOrder);
     }
