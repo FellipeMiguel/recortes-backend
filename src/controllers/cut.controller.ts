@@ -1,63 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { PrismaClient, RecortesStatus } from "@prisma/client";
 import supabase from "../services/supabase";
-import multer from "multer";
 import { AuthenticatedRequest } from "../middlewares/auth";
+import { extractFilePathFromUrl, uploadImage } from "../utils/string.utils";
 
 const prisma = new PrismaClient();
-
-async function uploadImage(
-  file: Express.Multer.File,
-  metadata: {
-    productType: string;
-    cutType: string;
-    material: string;
-    materialColor: string;
-  }
-): Promise<string> {
-  const keyBase = makeKey(metadata);
-  const ext = file.originalname.split(".").pop();
-  const filename = `${keyBase}.${ext}`;
-  const { error: upErr } = await supabase.storage
-    .from("recortes")
-    .upload(filename, file.buffer, {
-      contentType: file.mimetype,
-      upsert: true,
-    });
-  if (upErr) throw upErr;
-
-  const { data } = supabase.storage.from("recortes").getPublicUrl(filename);
-
-  return data.publicUrl;
-}
-
-function extractFilePathFromUrl(url: string): string {
-  const match = url.match(/recortes\/(.+)$/);
-  return match ? `recortes/${match[1].split("?")[0]}` : "";
-}
-
-function sanitize(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-");
-}
-
-function makeKey(data: {
-  productType: string;
-  cutType: string;
-  material: string;
-  materialColor: string;
-}): string {
-  const { productType, cutType, material, materialColor } = data;
-  return [
-    sanitize(productType),
-    sanitize(cutType),
-    sanitize(material),
-    sanitize(materialColor),
-  ].join("_");
-}
 
 // POST /cut
 export const create = async (
